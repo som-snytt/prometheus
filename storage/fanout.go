@@ -289,18 +289,6 @@ func NewMergeChunkQuerier(queriers []ChunkQuerier, primaryQuerier int, mergeFunc
 
 // Select returns a set of series that matches the given label matchers.
 func (q *mergeGenericQuerier) Select(sortSeries bool, hints *SelectHints, matchers ...*labels.Matcher) (genericSeriesSet, Warnings, error) {
-	if len(q.queriers) == 1 {
-		s, w, err := q.queriers[0].Select(sortSeries, hints, matchers...)
-		if err != nil {
-			if q.primaryQuerier == 0 {
-				return nil, w, err
-			}
-			// Nil will be converted to noop in adapter.
-			return nil, append(w, err), nil
-		}
-		return s, w, nil
-	}
-
 	var (
 		seriesSets = make([]genericSeriesSet, 0, len(q.queriers))
 		warnings   Warnings
